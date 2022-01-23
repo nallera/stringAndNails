@@ -5,7 +5,8 @@
 ### Arguments
 
 - -f is the figure outline, use c for circle and s for square
-- -nn is the number of nails in the outline
+- -p are the figure outline parameters, width,height
+- -n is the number of nails in the outline
 - -l is the number of lines to plot
 - -a are the anchor parameters in the format a_start,b_start,a_skip,b_skip
 - -t is a boolean to enable animation in the plotting (0/1)

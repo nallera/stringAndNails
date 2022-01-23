@@ -1,13 +1,14 @@
 import itertools
 import math
-from helper import linspace
+
+from figuregenerator import define_nails
 from turtle import *
 import matplotlib.pyplot as plt
 
 
-def plot_figure(figure, number_of_nails, number_of_lines, anchor_params, turtle_on):
+def plot_figure(figure, figureparams, number_of_nails, number_of_lines, anchor_params, turtle_on):
     if turtle_on:
-        nails = define_nails(figure, number_of_nails)
+        nails = define_nails(figure, figureparams, number_of_nails)
         pattern_points = generate_pattern(nails, number_of_lines, anchor_params)
 
         screen = Screen()
@@ -24,20 +25,21 @@ def plot_figure(figure, number_of_nails, number_of_lines, anchor_params, turtle_
             fig, ax = plt.subplots(nrows=2, ncols=n_cols)
 
             for index, nn in enumerate(number_of_nails):
-                nails = define_nails(figure, nn)
+                nails = define_nails(figure, figureparams, nn)
                 nails_coords = list(zip(*nails))
 
                 pattern_points = generate_pattern(nails, number_of_lines, anchor_params)
                 pattern_points_coords = list(zip(*pattern_points))
 
                 plot_single(ax[math.floor(index/n_cols), index % n_cols], nails_coords, pattern_points_coords, anchor_params)
+
             plt.show()
         elif type(anchor_params[0]) == list:
             n_cols = math.ceil(len(anchor_params) / 2)
             fig, ax = plt.subplots(nrows=2, ncols=n_cols)
 
             for index, ap in enumerate(anchor_params):
-                nails = define_nails(figure, number_of_nails)
+                nails = define_nails(figure, figureparams, number_of_nails)
                 nails_coords = list(zip(*nails))
 
                 pattern_points = generate_pattern(nails, number_of_lines, ap)
@@ -46,8 +48,22 @@ def plot_figure(figure, number_of_nails, number_of_lines, anchor_params, turtle_
                 plot_single(ax[math.floor(index/n_cols), index % n_cols], nails_coords, pattern_points_coords, ap)
 
             plt.show()
+        elif type(figureparams[0]) == list:
+            n_cols = math.ceil(len(figureparams) / 2)
+            fig, ax = plt.subplots(nrows=2, ncols=n_cols)
+
+            for index, fp in enumerate(figureparams):
+                nails = define_nails(figure, fp, number_of_nails)
+                nails_coords = list(zip(*nails))
+
+                pattern_points = generate_pattern(nails, number_of_lines, anchor_params)
+                pattern_points_coords = list(zip(*pattern_points))
+
+                plot_single(ax[math.floor(index/n_cols), index % n_cols], nails_coords, pattern_points_coords, anchor_params)
+
+            plt.show()
         else:
-            nails = define_nails(figure, number_of_nails)
+            nails = define_nails(figure, figureparams, number_of_nails)
             nails_coords = list(zip(*nails))
 
             pattern_points = generate_pattern(nails, number_of_lines, anchor_params)
@@ -61,6 +77,7 @@ def plot_figure(figure, number_of_nails, number_of_lines, anchor_params, turtle_
 def plot_single(ax, nails_coords, pattern_points_coords, anchor_params):
     ax.scatter(nails_coords[0], nails_coords[1])
     ax.set_aspect('equal')
+    ax.set(xlim=(-1.25, 1.25), ylim=(-1.25, 1.25))
 
     ax.plot(pattern_points_coords[0], pattern_points_coords[1], linewidth=0.25, color='black',
             label=f"{len(nails_coords[0])} nails, anchor starts: "
@@ -90,31 +107,6 @@ def turtle_plot(points, screen, turtle, pendown, tracer, color):
 
     if not tracer:
         screen.update()
-
-
-def define_nails(figure, number_of_nails):
-    nails = []
-
-    if figure == "c":
-        angles = linspace(-math.pi, math.pi, number_of_nails)
-        nails = [(math.cos(angle), math.sin(angle)) for angle in angles]
-    if figure == "s":
-        lengths = linspace(0, 4, number_of_nails)
-        for length in lengths:
-            if length < 1:
-                nails.append((-1 + length * 2, 1))
-                continue
-            if length < 2:
-                nails.append((1, 1 - (length - 1) * 2))
-                continue
-            if length < 3:
-                nails.append((1 - (length - 2) * 2, -1))
-                continue
-            else:
-                nails.append((-1, -1 + (length - 3) * 2))
-                continue
-
-    return nails
 
 
 def generate_pattern(nails, number_of_lines, anchor_params):
