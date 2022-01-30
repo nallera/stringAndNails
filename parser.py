@@ -2,7 +2,8 @@ import argparse
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="-f is the figure outline, use e for elipse and r for rectangle, "
+    parser = argparse.ArgumentParser(description="-f is the figure outline, use e for elipse, t for triangle"
+                                                 " and r for rectangle, "
                                                  "-p are the figure outline parameters (width,height), "
                                                  "-n is the number of nails in the outline, -l is the number of "
                                                  "lines to plot, -a are the anchor parameters in the format "
@@ -34,9 +35,9 @@ def parse_args():
 
     try:
         if ";" in args.anchor:
-            args.anchor = [[int(i) for i in e.split(",")] for e in args.anchor.split(";")]
+            args.anchor = [[(float(v) if i == 1 else int(v)) for i, v in enumerate(e.split(","))] for e in args.anchor.split(";")]
         else:
-            args.anchor = [int(e) for e in args.anchor.split(",")]
+            args.anchor = [(float(v) if i == 1 else int(v)) for i, v in enumerate(args.anchor.split(","))]
     except ValueError:
         raise TypeError("bad format in anchor parameters (-a)")
 
@@ -58,7 +59,22 @@ def parse_args():
     except ValueError:
         raise TypeError("-l needs to be an integer")
 
-    if args.figure not in ("e", "r"):
-        raise ValueError("-f must be one of the following: e, r")
+    if args.figure not in ("e", "t", "r"):
+        raise ValueError("-f must be one of the following: e, t, r")
+
+    if args.figure == "t":
+        if type(args.figureparams[0]) != list:
+            largest = max(args.figureparams)
+            index_largest = args.figureparams.index(largest)
+            other_two = [p for i, p in enumerate(args.figureparams) if i != index_largest]
+            if largest >= sum(other_two):
+                raise ValueError("The sum of two sides of a triangle must be larger than the third")
+        else:
+            for params in args.figureparams:
+                largest = max(params)
+                index_largest = params.index(largest)
+                other_two = [p for i, p in enumerate(params) if i != index_largest]
+                if largest >= sum(other_two):
+                    raise ValueError("The sum of two sides of a triangle must be larger than the third")
 
     return args

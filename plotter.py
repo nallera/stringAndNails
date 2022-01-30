@@ -78,6 +78,8 @@ def plot_single(ax, nails_coords, pattern_points_coords, anchor_params):
     ax.scatter(nails_coords[0], nails_coords[1])
     ax.set_aspect('equal')
     ax.set(xlim=(-1.25, 1.25), ylim=(-1.25, 1.25))
+    ax.set_xticks([])
+    ax.set_yticks([])
 
     ax.plot(pattern_points_coords[0], pattern_points_coords[1], linewidth=0.25, color='black',
             label=f"{len(nails_coords[0])} nails, anchor starts: "
